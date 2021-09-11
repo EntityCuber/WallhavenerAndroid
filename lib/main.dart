@@ -10,7 +10,12 @@ void main() {
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.light,
+      systemNavigationBarColor: Colors.black,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ));
     return MaterialApp(
       initialRoute: '/',
       routes: {
@@ -18,7 +23,9 @@ class App extends StatelessWidget {
         '/wallview': (context) => WallView(),
       },
       theme: ThemeData(
-          brightness: Brightness.dark, accentColor: Color(0xFF000000)),
+          brightness: Brightness.dark, accentColor: Color(0xFF000000),
+        bottomSheetTheme: BottomSheetThemeData(backgroundColor: Colors.transparent),
+    ),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:waterfall_flow/waterfall_flow.dart';
@@ -89,15 +91,16 @@ class _HomeState extends State<Home> {
         '&page=$currentPage');
 
     try {
-      Response response =
-          await get(Uri.parse('https://wallhaven.cc/api/v1/search?'
+      Response response = await get(
+          Uri.parse('https://wallhaven.cc/api/v1/search?'
               'categories=$_categories'
               '&purity=$_purity'
               '&sorting=$_sorting'
               '&ratios=$_ratios'
               '&apikey=$_apikey'
               '&q=$_q'
-              '&page=$currentPage'));
+              '&page=$currentPage'),
+          headers: {'Access-Control-Allow-Origin': '*'});
 
       print(response.statusCode);
 
@@ -158,67 +161,71 @@ class _HomeState extends State<Home> {
         elevation: 0.0,
         backgroundColor: Color(0xFF000000),
       ),
-      body: NotificationListener<ScrollEndNotification>(
-        onNotification: (notification) {
-          if (notification.metrics.extentAfter < 500 &&
-              _currentPage < _lastPage) {
-            print('more');
-            _currentPage += 1;
-            print('$_currentPage current, $_lastPage last');
-            _getThumbnails(_currentPage);
-          } else {
-            print('$_currentPage current, $_lastPage last');
-          }
-          return true;
-        },
-        child: RefreshIndicator(
-          onRefresh: () => _refresh(),
-          strokeWidth: 2,
-          color: Color(0xFFFFFFFF),
-          backgroundColor: Color(0xFF000000),
-          triggerMode: RefreshIndicatorTriggerMode.onEdge,
-          child: WaterfallFlow.builder(
-            itemCount: thumbnails.length,
-            itemBuilder: (context, index) => InkWell(
-              onTap: () {
-                print(thumbnails[index].path);
-                Navigator.pushNamed(context, '/wallview', arguments: {
-                  'path': thumbnails[index].path,
-                  'resolution': thumbnails[index].resolution,
-                  'shortUrl': thumbnails[index].shortUrl,
-                  'dimensionX': thumbnails[index].dimensionX,
-                  'dimensionY': thumbnails[index].dimensionY,
-                  'purity': thumbnails[index].purity,
-                });
-              },
-              child: Card(
-                semanticContainer: true,
-                clipBehavior: Clip.antiAliasWithSaveLayer,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                elevation: 5,
-                margin: EdgeInsets.all(0),
-                child: Container(
-                  color: Color(0xFF101010),
-                  height: (thumbnails[index].dimensionX.toDouble() * 6) /
-                      (double.parse(thumbnails[index].ratio)) *
-                      50 /
-                      (thumbnails[index].dimensionY.toDouble() *
-                          1.5 *
-                          (double.parse(thumbnails[index].ratio))),
-                  child: CachedNetworkImage(
-                    imageUrl: thumbnails[index].thumbsOriginal,
-                    fit: BoxFit.cover,
+      body: SafeArea(
+        child: NotificationListener<ScrollEndNotification>(
+          onNotification: (notification) {
+            if (notification.metrics.extentAfter < 500 &&
+                _currentPage < _lastPage) {
+              print('more');
+              _currentPage += 1;
+              print('$_currentPage current, $_lastPage last');
+              _getThumbnails(_currentPage);
+            } else {
+              print('$_currentPage current, $_lastPage last');
+            }
+            return true;
+          },
+          child: RefreshIndicator(
+            onRefresh: () => _refresh(),
+            strokeWidth: 2,
+            color: Color(0xFFFFFFFF),
+            backgroundColor: Color(0xFF000000),
+            triggerMode: RefreshIndicatorTriggerMode.onEdge,
+            child: WaterfallFlow.builder(
+              itemCount: thumbnails.length,
+              itemBuilder: (context, index) => InkWell(
+                onTap: () {
+                  print(thumbnails[index].path);
+                  Navigator.pushNamed(context, '/wallview', arguments: {
+                    'path': thumbnails[index].path,
+                    'resolution': thumbnails[index].resolution,
+                    'shortUrl': thumbnails[index].shortUrl,
+                    'dimensionX': thumbnails[index].dimensionX,
+                    'dimensionY': thumbnails[index].dimensionY,
+                    'purity': thumbnails[index].purity,
+                  });
+                },
+                child: Card(
+                  semanticContainer: true,
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  elevation: 0,
+                  margin: EdgeInsets.all(0),
+                  child: Container(
+                    color: Color(0xFF101010),
+                    height: (thumbnails[index].dimensionX.toDouble() * 6) /
+                        (double.parse(thumbnails[index].ratio)) *
+                        50 /
+                        (thumbnails[index].dimensionY.toDouble() *
+                            1.5 *
+                            (double.parse(thumbnails[index].ratio)))
+                    * MediaQuery.of(context).size.width/400
+                    ,
+                    child: CachedNetworkImage(
+                      imageUrl: thumbnails[index].thumbsOriginal,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 5),
-            gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 5,
-              crossAxisSpacing: 5,
+              padding: EdgeInsets.symmetric(horizontal: 5),
+              gridDelegate: SliverWaterfallFlowDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 5,
+                crossAxisSpacing: 5,
+              ),
             ),
           ),
         ),

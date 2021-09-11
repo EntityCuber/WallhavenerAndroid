@@ -52,7 +52,7 @@ class WallView extends StatelessWidget {
                                   size: 15, color: Color(0xFFFFFFFF)),
                               SizedBox(width: 5),
                               InkWell(
-                                  onTap: () => launch(data['path']),
+                                  onTap: () => launch(data['shortUrl']),
                                   child: Text(
                                     data['shortUrl'],
                                     style: TextStyle(fontSize: 13),

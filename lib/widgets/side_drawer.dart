@@ -45,7 +45,9 @@ class _SideBarState extends State<SideBar> {
               '&ratios=$_ratios'
               '&apikey=$_apikey'
               '&q=$_q'
-              '&page=1'));
+              '&page=1'),
+              headers: {'Access-Control-Allow-Origin': '*'}
+          );
 
       print('https://wallhaven.cc/api/v1/search?'
           'categories=$_categories'
@@ -607,7 +609,7 @@ class _SideBarState extends State<SideBar> {
                             ),
                             Text('Sorting'),
                             Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
+                              padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
